@@ -1,24 +1,31 @@
-const  http = require('http');
+const express = require('express');
+const listViewRouter = require('./list-view-router');
+const listEditRouter = require('./list-edit-router');
 
-const host = "localhost";
-const port = 8080
+const app = express();
 
-const tareas = [
-    { id: 1, description: "revisar codigo", state: true},
-    { id: 2, description: "documentar codigo", state: false },
-    { id: 3, description: "breack", state: true },
-    { id: 4, description: "estudiar", state: true },
-    { id: 5, description: "comprar la mesa", state: false },
-    { id: 6, description: "descansar", state: true }
-  ];
+app.use(express.json());
 
-  const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.write(JSON.stringify(tareas))
-    res.end();
-  });
-  
 
-server.listen(port, host, () => {
-console.log(`servidor funcionando en http://${host}:${port}`)
+const validateMethod = (req, res, next) => {
+  const validMethods = ['GET', 'POST', 'DELETE', 'PUT'];
+
+  if (!validMethods.includes(req.method)) {
+    return res.status(405).send('Invalid HTTP method');
+  }
+
+  next();
+};
+
+app.use(validateMethod);
+
+app.get('/', (req, res) => {
+  res.send("servidor express");
+});
+
+app.use('/tasks/view', listViewRouter);
+app.use('/tasks/edit', listEditRouter);
+
+app.listen(8080, () => {
+  console.log('El servidor está corriendo en el puerto 8080');
 });
