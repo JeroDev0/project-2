@@ -1,24 +1,16 @@
-const  http = require('http');
+const express = require('express');
+const router = require('./router');
 
-const host = "localhost";
-const port = 8080
+const app = express();
 
-const tareas = [
-    { id: 1, description: "revisar codigo", state: true},
-    { id: 2, description: "documentar codigo", state: false },
-    { id: 3, description: "breack", state: true },
-    { id: 4, description: "estudiar", state: true },
-    { id: 5, description: "comprar la mesa", state: false },
-    { id: 6, description: "descansar", state: true }
-  ];
+app.use(express.json());
 
-  const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.write(JSON.stringify(tareas))
-    res.end();
-  });
-  
+app.get('/', (req, res) => {
+  res.send("express server")
+});
 
-server.listen(port, host, () => {
-console.log(`servidor funcionando en http://${host}:${port}`)
+app.use('/api/tasks', router);
+
+app.listen(8080, () => {
+  console.log(`Server is running on port 8080`);
 });
